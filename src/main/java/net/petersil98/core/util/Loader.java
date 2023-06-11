@@ -18,13 +18,7 @@ public abstract class Loader {
     private static final List<Loader> LOADERS = new ArrayList<>();
 
     private static final String DATA_FOLDER = "data" + File.separator;
-    private static final String BASE_PATH = System.getProperty("user.dir") + File.separator + DATA_FOLDER;
-    private static final String LOL_BASE_PATH = BASE_PATH + "lol" + File.separator;
-    private static final String TFT_BASE_PATH = BASE_PATH + "tft" + File.separator;
-
-    public static Map<Integer, List<Integer>> ITEMS_FROM = new HashMap<>();
-    public static Map<Integer, List<Integer>> ITEMS_INTO = new HashMap<>();
-    public static Map<Integer, Integer> ITEMS_SPECIAL_RECIPE = new HashMap<>();
+    protected static final String BASE_PATH = System.getProperty("user.dir") + File.separator + DATA_FOLDER;
 
     private static final String SETTINGS = BASE_PATH + "settings.json";
     private static final String DDRAGON_VERSION = "ddragonVersion";
