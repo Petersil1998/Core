@@ -5,16 +5,15 @@ plugins {
 group 'net.petersil98'
 version '1.0'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
+apply plugin: 'maven-publish'
 
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
 }
+
+sourceCompatibility = 17
+targetCompatibility = 17
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
