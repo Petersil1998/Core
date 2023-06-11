@@ -5,13 +5,15 @@ plugins {
 group 'net.petersil98'
 version '1.0'
 
-apply plugin: 'maven-publish'
-
-allprojects {
-    repositories {
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
