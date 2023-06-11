@@ -1,5 +1,13 @@
 package net.petersil98.core.data;
 
+import net.petersil98.core.Core;
+import net.petersil98.core.constant.Constants;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+
 public class Sprite {
 
     private String sprite;
@@ -42,5 +50,15 @@ public class Sprite {
 
     public int getHeight() {
         return height;
+    }
+
+    public BufferedImage getImageFromSprite() {
+        String path = String.format("%scdn/%s/img/sprite/%s", Constants.DDRAGON_BASE_PATH, Constants.DDRAGON_VERSION, this.getSprite());
+        try {
+            return ImageIO.read(new URL(path)).getSubimage(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        } catch (IOException e) {
+            Core.LOGGER.error("Couldn't load sprite from image", e);
+        }
+        return null;
     }
 }
