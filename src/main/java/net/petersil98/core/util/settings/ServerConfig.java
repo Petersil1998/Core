@@ -9,7 +9,7 @@ public class ServerConfig {
     public static final ServerConfig EUNE_CONFIG = new ServerConfig(Region.EUROPE, Platform.EUNE);
     public static final ServerConfig KR_CONFIG = new ServerConfig(Region.ASIA, Platform.KR);
     public static final ServerConfig JP_CONFIG = new ServerConfig(Region.ASIA, Platform.JP);
-    public static final ServerConfig OCE_CONFIG = new ServerConfig(Region.AMERICA, Platform.OCE);
+    public static final ServerConfig OCE_CONFIG = new ServerConfig(Region.SEA, Platform.OCE);
     public static final ServerConfig BR_CONFIG = new ServerConfig(Region.AMERICA, Platform.BR);
     public static final ServerConfig RU_CONFIG = new ServerConfig(Region.EUROPE, Platform.RU);
     public static final ServerConfig TR_CONFIG = new ServerConfig(Region.EUROPE, Platform.TR);

@@ -153,6 +153,24 @@ public class RiotAPIRequest {
         return handleAndCastResponse(response, requiredClass);
     }
 
+    public static <T> T requestTftMatchEndpoint(String endPoint, Class<T> requiredClass) {
+        return requestTftMatchEndpoint(endPoint, requiredClass, new HashMap<>());
+    }
+
+    public static <T> T requestTftMatchEndpoint(String endPoint, CollectionType requiredClass) {
+        return requestTftMatchEndpoint(endPoint, requiredClass, new HashMap<>());
+    }
+
+    public static <T> T requestTftMatchEndpoint(String endPoint, Class<T> requiredClass, Map<String, String> filter) {
+        HttpResponse<String> response = request("match/v1/" + endPoint, AppType.TFT, RoutingType.REGION, filter);
+        return handleAndCastResponse(response, requiredClass);
+    }
+
+    public static <T> T requestTftMatchEndpoint(String endPoint, CollectionType requiredClass, Map<String, String> filter) {
+        HttpResponse<String> response = request("match/v1/" + endPoint, AppType.TFT, RoutingType.REGION, filter);
+        return handleAndCastResponse(response, requiredClass);
+    }
+
     private static <T> T handleAndCastResponse(HttpResponse<String> response, Class<T> clazz) {
         try {
             if(response.statusCode() == HttpStatus.SC_OK) {

@@ -3,7 +3,8 @@ package net.petersil98.core.constant;
 public enum Region {
     AMERICA("america"),
     EUROPE("europe"),
-    ASIA("asia");
+    ASIA("asia"),
+    SEA("sea");
 
     private final String name;
 
