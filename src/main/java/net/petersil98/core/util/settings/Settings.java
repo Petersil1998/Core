@@ -2,11 +2,6 @@ package net.petersil98.core.util.settings;
 
 import net.petersil98.core.util.Loader;
 
-import java.time.Duration;
-import java.time.Period;
-import java.time.temporal.TemporalUnit;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -46,11 +41,11 @@ public class Settings {
         if (decryptor != null) Settings.decryptor = decryptor;
     }
 
-    public static void setShouldCache(boolean shouldCache) {
+    public static void useCache(boolean shouldCache) {
         Settings.shouldCache = shouldCache;
     }
 
-    public static boolean shouldCache() {
+    public static boolean useCache() {
         return shouldCache;
     }
 }

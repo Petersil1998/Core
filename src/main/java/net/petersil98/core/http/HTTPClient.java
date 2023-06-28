@@ -23,7 +23,7 @@ import java.util.Map;
 public class HTTPClient {
 
     private final HttpClient client;
-    private final static Cache<String, HttpResponse<String>> CACHE = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(Duration.ofMinutes(10)).build();
+    private static final Cache<String, HttpResponse<String>> CACHE = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(Duration.ofMinutes(10)).build();
     private static final HTTPClient INSTANCE = new HTTPClient();
     private static final Marker MARKER = MarkerManager.getMarker(HTTPClient.class.getSimpleName());
 
