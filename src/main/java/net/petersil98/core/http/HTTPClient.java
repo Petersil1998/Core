@@ -40,7 +40,7 @@ public class HTTPClient {
         if(Settings.useCache()) {
             HttpResponse<String> cachedResponse = CACHE.getIfPresent(fullUrl);
             if (cachedResponse != null) return cachedResponse;
-        }
+        } else CACHE.invalidateAll();
         try {
             URI uri = URI.create(fullUrl);
             HttpResponse<String> response = request(HttpRequest.newBuilder(uri).GET().build());
