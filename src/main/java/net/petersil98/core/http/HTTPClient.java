@@ -37,14 +37,14 @@ public class HTTPClient {
 
     public HttpResponse<String> get(String url, Map<String, String> params) {
         String fullUrl = url+"?"+buildParameters(params);
-        if(Settings.shouldCache()) {
+        if(Settings.useCache()) {
             HttpResponse<String> cachedResponse = CACHE.getIfPresent(fullUrl);
             if (cachedResponse != null) return cachedResponse;
         }
         try {
             URI uri = URI.create(fullUrl);
             HttpResponse<String> response = request(HttpRequest.newBuilder(uri).GET().build());
-            if(Settings.shouldCache() && response.statusCode() >= 200 && response.statusCode() < 300) CACHE.put(fullUrl, response);
+            if(Settings.useCache() && response.statusCode() >= 200 && response.statusCode() < 300) CACHE.put(fullUrl, response);
             return response;
         } catch (Exception e) {
             Core.LOGGER.error(MARKER, "Failed to perform GET request", e);
