@@ -1,5 +1,8 @@
 package net.petersil98.core.util.settings;
 
+/**
+ * Enumeration of all possible Languages supported by Data Dragon
+ */
 public enum Language {
     AR_AE("ar_AE"),
     CS_CZ("cs_CZ"),

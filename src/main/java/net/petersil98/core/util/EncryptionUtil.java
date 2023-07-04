@@ -4,6 +4,7 @@ import net.petersil98.core.Core;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import net.petersil98.core.util.settings.Settings;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -11,7 +12,15 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+/**
+ * Utility class, which provides Methods to {@link #encrypt(String) encrypt} and {@link #decrypt(String) decrypt}
+ * a String. Can be used as a default implementation for encrypting and decrypting the API Key.
+ * @see Settings#setDecryptor(Function)
+ * @see Settings#setAPIKey(Supplier)
+ */
 public class EncryptionUtil {
 
     private static final String SECRET_KEY_1 = "u8x/A?D(G+KbPeSg";
@@ -33,6 +42,11 @@ public class EncryptionUtil {
         }
     }
 
+    /**
+     * Method to <b>encrypt</b> a String. This is just a default Implementation, feel free to use a different, more secure one.
+     * @param string The String to be encrypted
+     * @return The encrypted String
+     */
     public static String encrypt(String string) {
         try {
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
@@ -44,6 +58,11 @@ public class EncryptionUtil {
         return "";
     }
 
+    /**
+     * Method to <b>decrypt</b> a String. This is just a default Implementation, feel free to use a different, more secure one.
+     * @param string The encrypted String, that should get decrypted
+     * @return The decrypted String
+     */
     public static String decrypt(String string) {
         try {
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);

@@ -1,5 +1,8 @@
 package net.petersil98.core.constant;
 
+/**
+ * This class provides some common Constants used by Thresh and Spatula
+ */
 public class Constants {
 
     public static final String API_BASE_PATH = "https://#.api.riotgames.com/";

@@ -1,5 +1,8 @@
 package net.petersil98.core.constant;
 
+/**
+ * Enumeration of the possible Ranked Tiers in the Riot API
+ */
 public enum RankedTier {
     IRON(false),
     BRONZE(false),

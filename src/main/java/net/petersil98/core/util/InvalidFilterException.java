@@ -1,5 +1,8 @@
 package net.petersil98.core.util;
 
+/**
+ * Custom Exception, that gets thrown when an invalid value for the API Filter are passed
+ */
 public class InvalidFilterException extends IllegalArgumentException {
 
     public InvalidFilterException() {
