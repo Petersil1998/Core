@@ -20,10 +20,10 @@ public class BlockingRateLimiter extends RateLimiter {
      */
     public BlockingRateLimiter() {
         this.permitReleaser = new Thread(() -> {
-            while (!this.permits.isEmpty()) {
+            while (true) {
                 synchronized (this.permits) {
                     List<AggregatePermit> copy = List.copyOf(this.permits);
-                    for (AggregatePermit aggregatePermit : copy) {
+                    for (AggregatePermit aggregatePermit: copy) {
                         aggregatePermit.permits.stream().filter(IPermit::isInvalid).forEach(IPermit::remove);
                         if (aggregatePermit.isInvalid()) {
                             aggregatePermit.remove();
@@ -50,18 +50,6 @@ public class BlockingRateLimiter extends RateLimiter {
      */
     @Override
     public IPermit acquire(Region region, String endpointMethod) {
-        IPermit permit = getPermit(region, endpointMethod);
-        if(!this.permitReleaser.isAlive()) this.permitReleaser.start();
-        return permit;
-    }
-
-    /**
-     * Utility Method for getting the actual Permit
-     * @param region The region to which the request should be made
-     * @param endpointMethod The Method of a given Endpoint to which the request should be made
-     * @return A Permit once the Request can be made safely
-     */
-    private IPermit getPermit(Region region, String endpointMethod) {
         while (true) {
             if(!this.appLimitsPerRegion.containsKey(region)) return new DummyPermit();
             synchronized (this.appLimitsPerRegion.get(region)) {
