@@ -50,7 +50,12 @@ public class BlockingRateLimiter extends RateLimiter {
      */
     @Override
     public IPermit acquire(Region region, String endpointMethod) {
+        IPermit permit = getPermit(region, endpointMethod);
         if(!this.permitReleaser.isAlive()) this.permitReleaser.start();
+        return permit;
+    }
+
+    private IPermit getPermit(Region region, String endpointMethod) {
         while (true) {
             if(!this.appLimitsPerRegion.containsKey(region)) return new DummyPermit();
             synchronized (this.appLimitsPerRegion.get(region)) {
