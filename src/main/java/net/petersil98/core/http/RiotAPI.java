@@ -631,7 +631,8 @@ public class RiotAPI {
                 default -> Core.LOGGER.error(MARKER, String.format("Got bad status code %d. Body: %s", response.statusCode(), response.body()));
             }
         } catch (IOException e) {
-            Core.LOGGER.error(MARKER, String.format("Failed to parse JSON to %s object", requiredTyped.getContentType().getRawClass().getSimpleName()), e);
+            String className = requiredTyped.hasContentType() ? requiredTyped.getContentType().getRawClass().getSimpleName() : requiredTyped.getRawClass().getSimpleName();
+            Core.LOGGER.error(MARKER, String.format("Failed to parse JSON to %s object", className), e);
         }
         return null;
     }
