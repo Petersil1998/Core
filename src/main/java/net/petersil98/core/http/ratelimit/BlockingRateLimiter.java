@@ -55,6 +55,12 @@ public class BlockingRateLimiter extends RateLimiter {
         return permit;
     }
 
+    /**
+     * Utility Method for getting the actual Permit
+     * @param region The region to which the request should be made
+     * @param endpointMethod The Method of a given Endpoint to which the request should be made
+     * @return A Permit once the Request can be made safely
+     */
     private IPermit getPermit(Region region, String endpointMethod) {
         while (true) {
             if(!this.appLimitsPerRegion.containsKey(region)) return new DummyPermit();
