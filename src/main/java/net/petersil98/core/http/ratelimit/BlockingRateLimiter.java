@@ -13,17 +13,16 @@ import java.util.stream.Stream;
 public class BlockingRateLimiter extends RateLimiter {
 
     private final List<AggregatePermit> permits = new ArrayList<>();
-    private final Thread permitReleaser;
 
     /**
      * Constructor for this class. It creates a Thread, which checks periodically whether permits in {@link #permits} are invalid, and if so, removes them
      */
     public BlockingRateLimiter() {
-        this.permitReleaser = new Thread(() -> {
+        Thread permitReleaser = new Thread(() -> {
             while (true) {
                 synchronized (this.permits) {
                     List<AggregatePermit> copy = List.copyOf(this.permits);
-                    for (AggregatePermit aggregatePermit: copy) {
+                    for (AggregatePermit aggregatePermit : copy) {
                         aggregatePermit.permits.stream().filter(IPermit::isInvalid).forEach(IPermit::remove);
                         if (aggregatePermit.isInvalid()) {
                             aggregatePermit.remove();
@@ -37,6 +36,7 @@ public class BlockingRateLimiter extends RateLimiter {
                 }
             }
         });
+        permitReleaser.start();
     }
 
     /**

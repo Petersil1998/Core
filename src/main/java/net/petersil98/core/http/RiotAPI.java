@@ -595,11 +595,11 @@ public class RiotAPI {
             HttpResponse<String> cachedResponse = CACHE.getIfPresent(fullUrl);
             if (cachedResponse != null) return handleAndCastResponse(cachedResponse, requiredClass);
         } else CACHE.invalidateAll();
-        try(IPermit ignored = rateLimiter.acquire(region, SUMMONER_V4 + endpointMethod)) {
+        try(IPermit ignored = rateLimiter.acquire(region, endpointMethod)) {
             HttpResponse<String> response = request(fullUrl, filter);
             if(response.statusCode() == HttpStatus.SC_OK) {
                 if(Settings.useCache()) CACHE.put(fullUrl, response);
-                rateLimiter.updateRateLimitsFromHeaders(region, SUMMONER_V4 + endpointMethod, response.headers());
+                rateLimiter.updateRateLimitsFromHeaders(region, endpointMethod, response.headers());
             }
             return handleAndCastResponse(response, requiredClass);
         } catch (Exception e) {
