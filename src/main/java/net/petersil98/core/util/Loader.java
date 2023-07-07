@@ -28,16 +28,16 @@ public abstract class Loader {
     private static Language latestLanguage;
     private static final Thread UPDATE_CHECKER = new Thread(() -> {
         while (true) {
+            try {
+                Thread.sleep(Duration.of(30, ChronoUnit.MINUTES));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if(latestLanguage != Settings.getLanguage()) {
                 latestLanguage = Settings.getLanguage();
                 LOADERS.forEach(Loader::load);
             } else {
                 LOADERS.stream().filter(Loader::shouldReloadData).forEach(Loader::load);
-            }
-            try {
-                Thread.sleep(Duration.of(30, ChronoUnit.MINUTES));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     });
