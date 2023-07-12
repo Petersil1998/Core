@@ -5,6 +5,7 @@ import net.petersil98.core.constant.Region;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -29,6 +30,18 @@ public class BlockingRateLimiter extends RateLimiter {
                         }
                     }
                 }
+                synchronized (exceededAppRateLimits) {
+                    exceededAppRateLimits.entrySet().removeIf(entry -> {
+                        ExceededRateLimit limit = entry.getValue();
+                        return limit.getTimestamp() + limit.getRetryAfter() * 1000 < System.currentTimeMillis();
+                    });
+                }
+                synchronized (exceededMethodRateLimits) {
+                    exceededMethodRateLimits.entrySet().removeIf(entry -> {
+                        ExceededRateLimit limit = entry.getValue();
+                        return limit.getTimestamp() + limit.getRetryAfter() * 1000 < System.currentTimeMillis();
+                    });
+                }
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -51,12 +64,13 @@ public class BlockingRateLimiter extends RateLimiter {
     @Override
     public IPermit acquire(Region region, String endpointMethod) {
         while (true) {
-            if(!this.appLimitsPerRegion.containsKey(region)) return new DummyPermit();
-            synchronized (this.appLimitsPerRegion.get(region)) {
-                List<RateLimit> appLimits = this.appLimitsPerRegion.get(region);
-                if(!this.methodRateLimitsPerRegion.has(region, endpointMethod)) return new DummyPermit();
-                synchronized (this.methodRateLimitsPerRegion.get(region, endpointMethod)) {
-                    List<RateLimit> methodLimits = this.methodRateLimitsPerRegion.get(region, endpointMethod);
+            if(this.exceededAppRateLimits.containsKey(region) || this.exceededMethodRateLimits.has(region, endpointMethod)) continue;
+            if(!this.appLimits.containsKey(region)) return new DummyPermit();
+            synchronized (this.appLimits.get(region)) {
+                if(!this.methodRateLimits.has(region, endpointMethod)) return new DummyPermit();
+                synchronized (this.methodRateLimits.get(region, endpointMethod)) {
+                    List<RateLimit> appLimits = this.appLimits.get(region);
+                    List<RateLimit> methodLimits = this.methodRateLimits.get(region, endpointMethod);
                     if(appLimits.stream().allMatch(RateLimit::isPermitAvailable) && methodLimits.stream().allMatch(RateLimit::isPermitAvailable)) {
                         AggregatePermit permit = new AggregatePermit(Stream.concat(appLimits.stream(), methodLimits.stream()).map(RateLimit::acquire).toList(), this);
                         permits.add(permit);

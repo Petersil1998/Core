@@ -7,14 +7,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract class that represents a Rate Limiter
  */
 public abstract class RateLimiter {
 
-    protected final Map<Region, List<RateLimit>> appLimitsPerRegion = new HashMap<>();
-    protected final DoubleKeyMap<Region, String, List<RateLimit>> methodRateLimitsPerRegion = new DoubleKeyMap<>();
+    protected final Map<Region, List<RateLimit>> appLimits = new ConcurrentHashMap<>();
+    protected final DoubleKeyMap<Region, String, List<RateLimit>> methodRateLimits = new DoubleKeyMap<>();
+
+
+    protected final Map<Region, ExceededRateLimit> exceededAppRateLimits = new ConcurrentHashMap<>();
+    protected final DoubleKeyMap<Region, String, ExceededRateLimit> exceededMethodRateLimits = new DoubleKeyMap<>();
 
     /**
      * Method to acquire a Permit, which is needed in order to make a request. This Method is intended to be used in a <b>blocking</b> context
@@ -32,9 +37,9 @@ public abstract class RateLimiter {
      * @param headers The Headers containing the fields <i>x-app-rate-limit</i> and <i>x-method-rate-limit</i>.
      */
     public void updateRateLimitsFromHeaders(Region region, String endpointMethod, HttpHeaders headers) {
-        if (!this.appLimitsPerRegion.containsKey(region)) {
-            this.appLimitsPerRegion.put(region, parseRateLimits("x-app-rate-limit", headers));
-            this.appLimitsPerRegion.get(region).forEach(rateLimit -> {
+        if (!this.appLimits.containsKey(region)) {
+            this.appLimits.put(region, parseRateLimits("x-app-rate-limit", headers));
+            this.appLimits.get(region).forEach(rateLimit -> {
                 try {
                     rateLimit.acquire().close();
                 } catch (Exception e) {
@@ -42,9 +47,9 @@ public abstract class RateLimiter {
                 }
             });
         }
-        if (!this.methodRateLimitsPerRegion.has(region, endpointMethod)) {
-            this.methodRateLimitsPerRegion.put(region, endpointMethod, parseRateLimits("x-method-rate-limit", headers));
-            this.methodRateLimitsPerRegion.get(region, endpointMethod).forEach(rateLimit -> {
+        if (!this.methodRateLimits.has(region, endpointMethod)) {
+            this.methodRateLimits.put(region, endpointMethod, parseRateLimits("x-method-rate-limit", headers));
+            this.methodRateLimits.get(region, endpointMethod).forEach(rateLimit -> {
                 try {
                     rateLimit.acquire().close();
                 } catch (Exception e) {
@@ -52,6 +57,22 @@ public abstract class RateLimiter {
                 }
             });
         }
+    }
+
+    /**
+     * Method to handle when a rate limit has been exceeded.
+     * @param region The region to which the request has been made
+     * @param endpointMethod The Method of a given Endpoint to which the request has been made
+     * @param headers The Headers containing the fields <i>x-app-rate-limit</i> and <i>x-method-rate-limit</i>.
+     */
+    public void handleRateLimitExceeded(Region region, String endpointMethod, HttpHeaders headers) {
+        headers.firstValue("x-rate-limit-type").ifPresent(rateLimitType -> {
+            if(rateLimitType.equals("app")) {
+                exceededAppRateLimits.put(region, new ExceededRateLimit(System.currentTimeMillis(), headers.firstValueAsLong("retry-after").orElse(-1)));
+            } else if(rateLimitType.equals("method")) {
+                exceededMethodRateLimits.put(region, endpointMethod, new ExceededRateLimit(System.currentTimeMillis(), headers.firstValueAsLong("retry-after").orElse(-1)));
+            }
+        });
     }
 
     /**
@@ -66,5 +87,23 @@ public abstract class RateLimiter {
                     String[] split = limit.split(":");
                     return new RateLimit(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
                 }).toList()).orElse(null);
+    }
+
+    protected static class ExceededRateLimit {
+        private final long timestamp;
+        private final long retryAfter;
+
+        public ExceededRateLimit(long timestamp, long retryAfter) {
+            this.timestamp = timestamp;
+            this.retryAfter = retryAfter;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public long getRetryAfter() {
+            return retryAfter;
+        }
     }
 }

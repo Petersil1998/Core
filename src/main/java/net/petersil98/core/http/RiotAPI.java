@@ -198,6 +198,9 @@ public class RiotAPI {
             if(response.statusCode() == HttpStatus.SC_OK) {
                 if(Settings.useCache()) CACHE.put(fullUrl, response);
                 rateLimiter.updateRateLimitsFromHeaders(region, endpointMethod, response.headers());
+            } else if(response.statusCode() == 429) {
+                Core.LOGGER.warn("Rate Limit has been exceeded for endpoint " + endpointMethod + "!");
+                rateLimiter.handleRateLimitExceeded(region, endpointMethod, response.headers());
             }
             return handleAndCastResponse(response, requiredClass);
         } catch (Exception e) {

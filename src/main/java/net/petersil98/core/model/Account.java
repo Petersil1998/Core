@@ -14,6 +14,10 @@ public class Account {
         return RiotAPI.requestRiotAccountEndpoint("accounts/by-puuid/", puuid, region, Account.class);
     }
 
+    public static Account getAccountByRiotId(String name, String tag, Region region) {
+        return RiotAPI.requestRiotAccountEndpoint("accounts/by-riot-id/", name + "/" + tag, region, Account.class);
+    }
+
     public String getGameName() {
         return this.gameName;
     }

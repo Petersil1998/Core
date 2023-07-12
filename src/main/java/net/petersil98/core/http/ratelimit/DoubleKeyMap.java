@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of a Double Key Map, which means two Keys uniquely identify a value. It used two nested {@link HashMap} internally
@@ -19,7 +20,7 @@ public class DoubleKeyMap<K1, K2, V> {
      * Constructor
      */
     public DoubleKeyMap() {
-        this.map = new HashMap<>();
+        this.map = new ConcurrentHashMap<>();
     }
 
     /**
@@ -31,7 +32,7 @@ public class DoubleKeyMap<K1, K2, V> {
      */
     public void put(K1 key1, K2 key2, V value) {
         if(!map.containsKey(key1)) {
-            map.put(key1, new HashMap<>());
+            map.put(key1, new ConcurrentHashMap<>());
         }
         map.get(key1).put(key2,value);
     }
