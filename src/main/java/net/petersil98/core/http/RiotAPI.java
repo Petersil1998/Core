@@ -37,16 +37,9 @@ public class RiotAPI {
     private static final Cache<String, HttpResponse<String>> CACHE = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(10)).build();
 
     private static final String SUMMONER_V4 = "summoner/v4/";
-    private static final String CHAMPION_MASTERY_V4 = "champion-mastery/v4/";
-    private static final String LEAGUE_V4 = "league/v4/";
-    private static final String SPECTATOR_V4 = "spectator/v4/";
-    private static final String MATCH_V5 = "match/v5/";
     private static final String ACCOUNT_V1 = "account/v1/";
-    private static final String LEAGUE_V1 = "league/v1/";
-    private static final String MATCH_V1 = "match/v1/";
-    private static final String RANKED_V1 = "ranked/v1/";
 
-    public static RateLimiter rateLimiter = new BlockingRateLimiter();
+    protected static RateLimiter rateLimiter = new BlockingRateLimiter();
 
     private static HttpResponse<String> request(String url, Map<String, String> params) {
         HashMap<String, String> mutableMap = new HashMap<>(params);
@@ -121,270 +114,6 @@ public class RiotAPI {
     }
 
     /**
-     * Requests the LoL {@link RiotAPI#CHAMPION_MASTERY_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLChampionMasteryEndpoint(String method, String args, Platform platform, Class<T> requiredClass) {
-        return requestLoLChampionMasteryEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#CHAMPION_MASTERY_V4} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLChampionMasteryEndpoint(String method, String args, Platform platform, TypeBase requiredClass) {
-        return requestLoLChampionMasteryEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#CHAMPION_MASTERY_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLChampionMasteryEndpoint(String method, String args, Platform platform, Class<T> requiredClass, Map<String, String> filter) {
-        return requestLoLChampionMasteryEndpoint(method, args, platform, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#CHAMPION_MASTERY_V4} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLChampionMasteryEndpoint(String method, String args, Platform platform, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(CHAMPION_MASTERY_V4 + method + args, AppType.LOL, platform),
-                CHAMPION_MASTERY_V4 + method, Region.byPlatform(platform), requiredClass, filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#LEAGUE_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLLeagueEndpoint(String method, String args, Platform platform, Class<T> requiredClass) {
-        return requestLoLLeagueEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#LEAGUE_V4} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLLeagueEndpoint(String method, String args, Platform platform, TypeBase requiredClass) {
-        return requestLoLLeagueEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#LEAGUE_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLLeagueEndpoint(String method, String args, Platform platform, Class<T> requiredClass, Map<String, String> filter) {
-        return requestLoLLeagueEndpoint(method, args, platform, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#LEAGUE_V4} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLLeagueEndpoint(String method, String args, Platform platform, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(LEAGUE_V4 + method + args, AppType.LOL, platform),
-                LEAGUE_V4 + method, Region.byPlatform(platform), requiredClass, filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SPECTATOR_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSpectatorEndpoint(String method, String args, Platform platform, Class<T> requiredClass) {
-        return requestLoLSpectatorEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SPECTATOR_V4} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSpectatorEndpoint(String method, String args, Platform platform, TypeBase requiredClass) {
-        return requestLoLSpectatorEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SPECTATOR_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSpectatorEndpoint(String method, String args, Platform platform, Class<T> requiredClass, Map<String, String> filter) {
-        return requestLoLSpectatorEndpoint(method, args, platform, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SPECTATOR_V4} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSpectatorEndpoint(String method, String args, Platform platform, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(SPECTATOR_V4 + method + args, AppType.LOL, platform),
-                SPECTATOR_V4 + method, Region.byPlatform(platform), requiredClass, filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#MATCH_V5} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLMatchEndpoint(String method, String args, Region region, Class<T> requiredClass) {
-        return requestLoLMatchEndpoint(method, args, region, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#MATCH_V5} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLMatchEndpoint(String method, String args, Region region, TypeBase requiredClass) {
-        return requestLoLMatchEndpoint(method, args, region, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#MATCH_V5} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLMatchEndpoint(String method, String args, Region region, Class<T> requiredClass, Map<String, String> filter) {
-        return requestLoLMatchEndpoint(method, args, region, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#MATCH_V5} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLMatchEndpoint(String method, String args, Region region, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(MATCH_V5 + method + args, AppType.LOL, region),
-                MATCH_V5 + method, region, requiredClass, filter);
-    }
-
-    /**
      * Requests the Riot {@link RiotAPI#ACCOUNT_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
      * If caching is enabled, the cached response will be returned.
      * @see Settings#useCache(boolean)
@@ -451,204 +180,6 @@ public class RiotAPI {
     }
 
     /**
-     * Requests the TfT {@link RiotAPI#LEAGUE_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftLeagueEndpoint(String method, String args, Platform platform, Class<T> requiredClass) {
-        return requestTftLeagueEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#LEAGUE_V1} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftLeagueEndpoint(String method, String args, Platform platform, TypeBase requiredClass) {
-        return requestTftLeagueEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#LEAGUE_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftLeagueEndpoint(String method, String args, Platform platform, Class<T> requiredClass, Map<String, String> filter) {
-        return requestTftLeagueEndpoint(method, args, platform, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#LEAGUE_V1} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftLeagueEndpoint(String method, String args, Platform platform, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(LEAGUE_V1 + method + args, AppType.TFT, platform),
-                LEAGUE_V1 + method, Region.byPlatform(platform), requiredClass, filter);
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#MATCH_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftMatchEndpoint(String method, String args, Region region, Class<T> requiredClass) {
-        return requestTftMatchEndpoint(method, args, region, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#MATCH_V1} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftMatchEndpoint(String method, String args, Region region, TypeBase requiredClass) {
-        return requestTftMatchEndpoint(method, args, region, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#MATCH_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftMatchEndpoint(String method, String args, Region region, Class<T> requiredClass, Map<String, String> filter) {
-        return requestTftMatchEndpoint(method, args, region, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the TfT {@link RiotAPI#MATCH_V1} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestTftMatchEndpoint(String method, String args, Region region, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(MATCH_V1 + method + args, AppType.TFT, region),
-                MATCH_V1 + method, region, requiredClass, filter);
-    }
-
-    /**
-     * Requests the LoR {@link RiotAPI#RANKED_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLorRankedEndpoint(String method, String args, Region region, Class<T> requiredClass) {
-        return requestLorRankedEndpoint(method, args, region, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoR {@link RiotAPI#RANKED_V1} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLorRankedEndpoint(String method, String args, Region region, TypeBase requiredClass) {
-        return requestLorRankedEndpoint(method, args, region, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoR {@link RiotAPI#RANKED_V1} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLorRankedEndpoint(String method, String args, Region region, Class<T> requiredClass, Map<String, String> filter) {
-        return requestLorRankedEndpoint(method, args, region, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the LoR {@link RiotAPI#RANKED_V1} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param region Region to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLorRankedEndpoint(String method, String args, Region region, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(RANKED_V1 + method + args, AppType.LOR, region),
-                RANKED_V1 + method, region, requiredClass, filter);
-    }
-
-    /**
      * Utility Method that reads the cached response if caching is enable and that deals with the Rate Limiter (blocking) while making the API request
      * @param fullUrl The full url for the request
      * @param endpointMethod The Endpoint used in the url. Used for the Rate Limiter
@@ -657,7 +188,7 @@ public class RiotAPI {
      * @param filter The Filter that gets included as GET parameter in the request
      * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
      */
-    private static <T> T handleCacheAndRateLimiter(String fullUrl, String endpointMethod, Region region, JavaType requiredClass, Map<String, String> filter) {
+    protected static <T> T handleCacheAndRateLimiter(String fullUrl, String endpointMethod, Region region, JavaType requiredClass, Map<String, String> filter) {
         if(Settings.useCache()) {
             HttpResponse<String> cachedResponse = CACHE.getIfPresent(fullUrl);
             if (cachedResponse != null) return handleAndCastResponse(cachedResponse, requiredClass);
@@ -687,7 +218,7 @@ public class RiotAPI {
      * @throws ForbiddenException Gets thrown when {@link HttpStatus#SC_FORBIDDEN} Status Code is returned
      * @throws NotFoundException Gets thrown when {@link HttpStatus#SC_NOT_FOUND} Status Code is returned
      */
-    private static <T> T handleAndCastResponse(HttpResponse<String> response, JavaType requiredTyped) throws BadRequestException, UnauthorizedException, ForbiddenException, NotFoundException {
+    protected static <T> T handleAndCastResponse(HttpResponse<String> response, JavaType requiredTyped) throws BadRequestException, UnauthorizedException, ForbiddenException, NotFoundException {
         try {
             switch (response.statusCode()) {
                 case HttpStatus.SC_OK -> {return Core.MAPPER.readValue(response.body(), requiredTyped);}
@@ -712,7 +243,7 @@ public class RiotAPI {
      * @param region The Region
      * @return The full Url
      */
-    private static String constructUrl(String endPoint, AppType app, Region region) {
+    protected static String constructUrl(String endPoint, AppType app, Region region) {
         return (Constants.API_BASE_PATH + app + "/").replaceAll("#", region.toString()) + endPoint;
     }
 
@@ -724,14 +255,14 @@ public class RiotAPI {
      * @param platform The Platform
      * @return The full Url
      */
-    private static String constructUrl(String endPoint, AppType app, Platform platform) {
+    protected static String constructUrl(String endPoint, AppType app, Platform platform) {
         return (Constants.API_BASE_PATH + app + "/").replaceAll("#", platform.toString()) + endPoint;
     }
 
     /**
      * Enum that represents the possible App Types in the Riot API
      */
-    private enum AppType {
+    protected enum AppType {
         RIOT("riot"),
         LOL("lol"),
         TFT("tft"),
