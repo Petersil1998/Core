@@ -1,21 +1,11 @@
 package net.petersil98.core.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import net.petersil98.core.constant.Constants;
 import net.petersil98.core.util.settings.Language;
 import net.petersil98.core.util.settings.Settings;
-import org.apache.logging.log4j.core.util.IOUtils;
 
-import java.io.*;
-import java.net.URI;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static net.petersil98.core.Core.MAPPER;
 
 /**
  * The Loader Class is used to updated and load static Data. There will be created a Folder named "data" the Base Directory,
