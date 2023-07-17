@@ -1,10 +1,10 @@
 package net.petersil98.core.http.ratelimit;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.apache.logging.log4j.util.TriConsumer;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 /**
  * Implementation of a Double Key Map, which means two Keys uniquely identify a value. It used two nested {@link HashMap} internally
@@ -53,7 +53,7 @@ public class DoubleKeyMap<K1, K2, V> {
      * @param key2 Second Key
      * @return whether there is a value associated with the given keys
      */
-    public boolean has(K1 key1, K2 key2) {
+    public boolean containsKey(K1 key1, K2 key2) {
         if(map.get(key1) == null) return false;
         if(map.get(key1).get(key2) == null) return false;
         return true;
@@ -71,6 +71,24 @@ public class DoubleKeyMap<K1, K2, V> {
             }
         }
         return set;
+    }
+
+    public void forEach(TriConsumer<? super K1, ? super K2, ? super V> action) {
+        Objects.requireNonNull(action);
+        for (Entry<K1, K2, V> entry : entrySet()) {
+            K1 k1;
+            K2 k2;
+            V v;
+            try {
+                k1 = entry.getKey1();
+                k2 = entry.getKey2();
+                v = entry.getValue();
+            } catch (IllegalStateException ise) {
+                // this usually means the entry is no longer in the map.
+                throw new ConcurrentModificationException(ise);
+            }
+            action.accept(k1, k2, v);
+        }
     }
 
     /**

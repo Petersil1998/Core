@@ -26,7 +26,7 @@ class RateLimit {
      * Method to acquire a Permit. This Method is <b>blocking</b>
      * @return A Permit
      */
-    public IPermit acquire() {
+    public Permit acquire() {
         while (!isPermitAvailable()) {
             try {
                 Thread.sleep(500);
@@ -47,6 +47,10 @@ class RateLimit {
         synchronized (this.permits) {
             return this.permits.size() < this.rateLimit;
         }
+    }
+
+    public List<IPermit> getPermits() {
+        return permits;
     }
 
     /**
@@ -90,8 +94,11 @@ class RateLimit {
          */
         @Override
         public boolean isInvalid() {
-            return this.canceled ||
-                    (this.closed && System.currentTimeMillis() >= closedTimestamp + rateLimit.rateLimitIntervalInSeconds * 1000L);
+            return this.canceled || (this.closed && getRemainingLifespan() < 0);
+        }
+
+        public long getRemainingLifespan() {
+            return closed ? closedTimestamp + rateLimit.rateLimitIntervalInSeconds * 1000L - System.currentTimeMillis() : Long.MAX_VALUE;
         }
 
         /**

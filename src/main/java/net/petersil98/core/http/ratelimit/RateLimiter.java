@@ -4,7 +4,6 @@ import net.petersil98.core.constant.Region;
 
 import java.net.http.HttpHeaders;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class RateLimiter {
 
-    protected final Map<Region, List<RateLimit>> appLimits = new ConcurrentHashMap<>();
+    protected final Map<Region, List<RateLimit>> appRateLimits = new ConcurrentHashMap<>();
     protected final DoubleKeyMap<Region, String, List<RateLimit>> methodRateLimits = new DoubleKeyMap<>();
 
 
@@ -37,9 +36,9 @@ public abstract class RateLimiter {
      * @param headers The Headers containing the fields <i>x-app-rate-limit</i> and <i>x-method-rate-limit</i>.
      */
     public void updateRateLimitsFromHeaders(Region region, String endpointMethod, HttpHeaders headers) {
-        if (!this.appLimits.containsKey(region)) {
-            this.appLimits.put(region, parseRateLimits("x-app-rate-limit", headers));
-            this.appLimits.get(region).forEach(rateLimit -> {
+        if (!this.appRateLimits.containsKey(region)) {
+            this.appRateLimits.put(region, parseRateLimits("x-app-rate-limit", headers));
+            this.appRateLimits.get(region).forEach(rateLimit -> {
                 try {
                     rateLimit.acquire().close();
                 } catch (Exception e) {
@@ -47,7 +46,7 @@ public abstract class RateLimiter {
                 }
             });
         }
-        if (!this.methodRateLimits.has(region, endpointMethod)) {
+        if (!this.methodRateLimits.containsKey(region, endpointMethod)) {
             this.methodRateLimits.put(region, endpointMethod, parseRateLimits("x-method-rate-limit", headers));
             this.methodRateLimits.get(region, endpointMethod).forEach(rateLimit -> {
                 try {
@@ -67,7 +66,7 @@ public abstract class RateLimiter {
      */
     public void handleRateLimitExceeded(Region region, String endpointMethod, HttpHeaders headers) {
         headers.firstValue("x-rate-limit-type").ifPresent(rateLimitType -> {
-            if(rateLimitType.equals("app")) {
+            if(rateLimitType.equals("application")) {
                 exceededAppRateLimits.put(region, new ExceededRateLimit(System.currentTimeMillis(), headers.firstValueAsLong("retry-after").orElse(-1)));
             } else if(rateLimitType.equals("method")) {
                 exceededMethodRateLimits.put(region, endpointMethod, new ExceededRateLimit(System.currentTimeMillis(), headers.firstValueAsLong("retry-after").orElse(-1)));
@@ -104,6 +103,14 @@ public abstract class RateLimiter {
 
         public long getRetryAfter() {
             return retryAfter;
+        }
+
+        public long getRemainingTime() {
+            return timestamp + retryAfter * 1000 - System.currentTimeMillis();
+        }
+
+        public boolean isStillExceeded() {
+            return getRemainingTime() > 0;
         }
     }
 }

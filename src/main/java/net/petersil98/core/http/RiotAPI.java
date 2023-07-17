@@ -8,10 +8,7 @@ import com.google.common.cache.CacheBuilder;
 import net.petersil98.core.Core;
 import net.petersil98.core.constant.Platform;
 import net.petersil98.core.constant.Region;
-import net.petersil98.core.http.exceptions.BadRequestException;
-import net.petersil98.core.http.exceptions.ForbiddenException;
-import net.petersil98.core.http.exceptions.NotFoundException;
-import net.petersil98.core.http.exceptions.UnauthorizedException;
+import net.petersil98.core.http.exceptions.*;
 import net.petersil98.core.http.ratelimit.BlockingRateLimiter;
 import net.petersil98.core.http.ratelimit.IPermit;
 import net.petersil98.core.http.ratelimit.RateLimiter;
@@ -230,6 +227,7 @@ public class RiotAPI {
                 case HttpStatus.SC_UNAUTHORIZED -> throw new UnauthorizedException(response.uri().toString(), response.body());
                 case HttpStatus.SC_FORBIDDEN -> throw new ForbiddenException(response.uri().toString(), response.body());
                 case HttpStatus.SC_NOT_FOUND -> throw new NotFoundException(response.uri().toString(), response.body());
+                case 429 -> throw new RateLimitExceededException(response.uri().toString(), response.body());
                 default -> Core.LOGGER.error(MARKER, String.format("Got bad status code %d. Body: %s", response.statusCode(), response.body()));
             }
         } catch (IOException e) {
