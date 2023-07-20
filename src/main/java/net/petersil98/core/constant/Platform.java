@@ -1,24 +1,18 @@
 package net.petersil98.core.constant;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Enumeration of the possible Platforms in the Riot API
+ * Enumeration of the possible Platforms for the Account Endpoint
  */
-public enum Platform {
-    EUW("euw1"),
-    EUNE("eun1"),
-    KR("kr"),
-    JP("jp1"),
-    OCE("oc1"),
-    BR("br1"),
-    RU("ru"),
-    TR("tr1"),
-    NA("na1"),
-    LAN("la1"),
-    LAS("la2");
+public class Platform {
 
     private final String name;
 
-    Platform(String name) {
+    protected Platform(String name) {
         this.name = name;
     }
 
@@ -28,10 +22,31 @@ public enum Platform {
      * @return The platform if found, {@code null} otherwise
      */
     public static Platform getPlatform(String platformName) {
-        for (Platform platform: Platform.values()) {
+        for (Platform platform: Platform.values(Platform.class)) {
             if (platform.name.equalsIgnoreCase(platformName)) return platform;
         }
         return null;
+    }
+
+    /**
+     * Utility Method to get all the constants of a class similar to how <b><code>values()</code></b> works in enums.
+     * A Field is considered a constant if its <b>public</b>, <b>static</b> and <b>final</b>
+     * @param clazz Class containing the constants
+     * @return List of the Constants
+     */
+    protected static List<Platform> values(Class<? extends Platform> clazz) {
+        Field[] declaredFields = clazz.getDeclaredFields();
+        List<Platform> platforms = new ArrayList<>(declaredFields.length);
+        for (Field field : declaredFields) {
+            if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
+                try {
+                    platforms.add((Platform) field.get(null));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return platforms;
     }
 
     @Override
