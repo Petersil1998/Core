@@ -1,6 +1,5 @@
 package net.petersil98.core.model;
 
-import net.petersil98.core.constant.Platform;
 import net.petersil98.core.constant.Region;
 import net.petersil98.core.http.RiotAPI;
 

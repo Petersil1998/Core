@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.petersil98.core.Core;
-import net.petersil98.core.constant.Platform;
 import net.petersil98.core.constant.Region;
 import net.petersil98.core.http.exceptions.*;
 import net.petersil98.core.http.ratelimit.BlockingRateLimiter;
@@ -32,9 +31,8 @@ public class RiotAPI {
     private static final Marker MARKER = MarkerManager.getMarker(RiotAPI.class.getSimpleName());
     private static final Cache<String, HttpResponse<String>> CACHE = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(10)).build();
 
-    private static final String API_BASE_PATH = "https://#.api.riotgames.com/";
+    protected static final String API_BASE_PATH = "https://#.api.riotgames.com/";
 
-    private static final String SUMMONER_V4 = "summoner/v4/";
     private static final String ACCOUNT_V1 = "account/v1/";
 
     protected static RateLimiter rateLimiter = new BlockingRateLimiter();
@@ -43,72 +41,6 @@ public class RiotAPI {
         HashMap<String, String> mutableMap = new HashMap<>(params);
         mutableMap.put("api_key", Settings.getAPIKey());
         return HTTPClient.getInstance().get(url, mutableMap);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SUMMONER_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSummonerEndpoint(String method, String args, Platform platform, Class<T> requiredClass) {
-        return requestLoLSummonerEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SUMMONER_V4} endpoint. If successful, the Response is mapped to the desired {@link TypeBase}.
-     * This method is intended to be used for {@link com.fasterxml.jackson.databind.type.CollectionType CollectionTypes} or
-     * {@link com.fasterxml.jackson.databind.type.MapType MapTypes}.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSummonerEndpoint(String method, String args, Platform platform, TypeBase requiredClass) {
-        return requestLoLSummonerEndpoint(method, args, platform, requiredClass, new HashMap<>());
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SUMMONER_V4} endpoint. If successful, the Response is mapped to the desired Class <b>T</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of class <b>T</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSummonerEndpoint(String method, String args, Platform platform, Class<T> requiredClass, Map<String, String> filter) {
-        return requestLoLSummonerEndpoint(method, args, platform, TypeFactory.defaultInstance().constructType(requiredClass), filter);
-    }
-
-    /**
-     * Requests the LoL {@link RiotAPI#SUMMONER_V4} endpoint. If successful, the Response is mapped to the desired {@link JavaType} <b>{@code requiredClass}</b>.
-     * If caching is enabled, the cached response will be returned.
-     * @see Settings#useCache(boolean)
-     * @see TypeFactory
-     * @param method Method in the Endpoint that should get called
-     * @param args Extra data needed for the Request
-     * @param platform Platform to make the request to
-     * @param requiredClass Class to which the response should get mapped to
-     * @param filter The filter that should get used for the request. <b>Note:</b> The Values in the Map need to be Strings,
-     *               even if they represent an integer
-     * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
-     */
-    public static <T> T requestLoLSummonerEndpoint(String method, String args, Platform platform, JavaType requiredClass, Map<String, String> filter) {
-        return handleCacheAndRateLimiter(
-                constructUrl(SUMMONER_V4 + method + args, AppType.LOL, platform),
-                SUMMONER_V4 + method, Region.byPlatform(platform), requiredClass, filter);
     }
 
     /**
@@ -247,18 +179,6 @@ public class RiotAPI {
      */
     protected static String constructUrl(String endPoint, AppType app, Region region) {
         return (API_BASE_PATH + app + "/").replaceAll("#", region.toString()) + endPoint;
-    }
-
-    /**
-     * Utility Method to construct the full Url for a given Endpoint, {@link AppType} and {@link Platform}
-     * @see #API_BASE_PATH
-     * @param endPoint The Endpoint
-     * @param app The AppType
-     * @param platform The Platform
-     * @return The full Url
-     */
-    protected static String constructUrl(String endPoint, AppType app, Platform platform) {
-        return (API_BASE_PATH + app + "/").replaceAll("#", platform.toString()) + endPoint;
     }
 
     /**
