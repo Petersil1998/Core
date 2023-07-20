@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class Platform {
 
+    public static final Platform f = new Platform("kekw");
+
     private final String name;
 
     protected Platform(String name) {
@@ -30,22 +32,26 @@ public class Platform {
 
     /**
      * Utility Method to get all the constants of a class similar to how <b><code>values()</code></b> works in enums.
+     * This method includes the constants of all super classes of <code>clazz</code> up to <code>Platform</code> class.
      * A Field is considered a constant if its <b>public</b>, <b>static</b> and <b>final</b>
      * @param clazz Class containing the constants
      * @return List of the Constants
      */
     protected static List<Platform> values(Class<? extends Platform> clazz) {
-        Field[] declaredFields = clazz.getDeclaredFields();
-        List<Platform> platforms = new ArrayList<>(declaredFields.length);
-        for (Field field : declaredFields) {
-            if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
-                try {
-                    platforms.add((Platform) field.get(null));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+        List<Platform> platforms = new ArrayList<>();
+        Class<?> c = clazz;
+        do {
+            for (Field field : c.getDeclaredFields()) {
+                if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
+                    try {
+                        platforms.add((Platform) field.get(null));
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
-        }
+            c = c.getSuperclass();
+        } while (Platform.class.isAssignableFrom(c));
         return platforms;
     }
 
