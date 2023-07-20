@@ -1,7 +1,7 @@
 package net.petersil98.core.util.settings;
 
 /**
- * Enumeration of all possible Languages supported by Data Dragon
+ * Enumeration of all possible Languages supported by Data Dragon, Valorant API and Legends of Runeterra's Data Dragon
  */
 public enum Language {
     AR_AE("ar_AE", false, true),

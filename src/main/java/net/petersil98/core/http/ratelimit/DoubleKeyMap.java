@@ -4,7 +4,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Implementation of a Double Key Map, which means two Keys uniquely identify a value. It used two nested {@link HashMap} internally
@@ -73,6 +73,10 @@ public class DoubleKeyMap<K1, K2, V> {
         return set;
     }
 
+    /**
+     * Performs a given Action for each Element of the Map as specified in {@link Collection#forEach(Consumer)}
+     * @param action The action that should be performed
+     */
     public void forEach(TriConsumer<? super K1, ? super K2, ? super V> action) {
         Objects.requireNonNull(action);
         for (Entry<K1, K2, V> entry : entrySet()) {

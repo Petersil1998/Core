@@ -1,7 +1,7 @@
 package net.petersil98.core.http.exceptions;
 
 /**
- * Exception thrown when a {@link org.apache.http.HttpStatus#SC_BAD_REQUEST} Status Code is returned
+ * Exception thrown when a 429 (Too Many Requests) Status Code is returned
  */
 public class RateLimitExceededException extends RuntimeException {
 

@@ -8,6 +8,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+/**
+ * Data Class that represents a Summoner for League of Legends and Teamfight Tactics
+ */
 public class Summoner {
 
     private String id;
@@ -19,18 +22,46 @@ public class Summoner {
     private long revisionDate;
     private int summonerLevel;
 
+    /**
+     * Get a Summoner by their <b>name</b> on a specific {@link Platform}. Names in are <i>case-insensitive</i> and
+     * <i>whitespaces</i> don't matter
+     * @param summonerName The name of the Summoner
+     * @param platform The platform they are on
+     * @return A Summoner if the Request was successful, <code>null</code> otherwise
+     */
     public static Summoner getSummonerByName(String summonerName, Platform platform) {
         return RiotAPI.requestLoLSummonerEndpoint("summoners/by-name/", URLEncoder.encode(summonerName, StandardCharsets.UTF_8), platform, Summoner.class);
     }
 
+    /**
+     * Get a Summoner by their <b>account ID</b> on a specific {@link Platform}. Account IDs are unique per game.
+     * All IDs are encrypted with the used API Key, so you need to you the same API Key when working with this IDs
+     * @param accountID The Account ID of the Summoner
+     * @param platform The platform they are on
+     * @return A Summoner if the Request was successful, <code>null</code> otherwise
+     */
     public static Summoner getSummonerByAccountID(String accountID, Platform platform) {
         return RiotAPI.requestLoLSummonerEndpoint("summoners/by-account/", accountID, platform, Summoner.class);
     }
 
+    /**
+     * Get a Summoner by their <b>PUUID</b> on a specific {@link Platform}. PUUIDs are unique globally.
+     * All IDs are encrypted with the used API Key, so you need to you the same API Key when working with this IDs
+     * @param puuid The PUUID of the Summoner
+     * @param platform The platform they are on
+     * @return A Summoner if the Request was successful, <code>null</code> otherwise
+     */
     public static Summoner getSummonerByPUUID(String puuid, Platform platform) {
         return RiotAPI.requestLoLSummonerEndpoint("summoners/by-puuid/", puuid, platform, Summoner.class);
     }
 
+    /**
+     * Get a Summoner by their <b>Summoner ID</b> on a specific {@link Platform}. Summoner IDs are unique per region.
+     * All IDs are encrypted with the used API Key, so you need to you the same API Key when working with this IDs
+     * @param id The Summoner ID of the Summoner
+     * @param platform The platform they are on
+     * @return A Summoner if the Request was successful, <code>null</code> otherwise
+     */
     public static Summoner getSummonerByID(String id, Platform platform) {
         return RiotAPI.requestLoLSummonerEndpoint("summoners/", id, platform, Summoner.class);
     }

@@ -246,7 +246,7 @@ public class BlockingRateLimiter extends RateLimiter {
         }
 
         /**
-         * Cancels all thr associated Permits of this Aggregate
+         * Cancels all the associated Permits of this Aggregate
          */
         @Override
         public void cancel() {

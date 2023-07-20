@@ -88,6 +88,9 @@ public abstract class RateLimiter {
                 }).toList()).orElse(null);
     }
 
+    /**
+     * Class that represents an exceeded Rate Limit
+     */
     protected static class ExceededRateLimit {
         private final long timestamp;
         private final long retryAfter;
