@@ -36,12 +36,12 @@ public class Platform {
      * @param clazz Class containing the constants
      * @return List of the Constants
      */
-    protected static List<Platform> values(Class<? extends Platform> clazz) {
-        List<Platform> platforms = new ArrayList<>();
+    protected static <T extends Platform> List<T> values(Class<T> clazz) {
+        List<T> platforms = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
                 try {
-                    platforms.add((Platform) field.get(null));
+                    platforms.add((T) field.get(null));
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
