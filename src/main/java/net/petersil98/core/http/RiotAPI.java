@@ -177,7 +177,7 @@ public class RiotAPI {
      * @param region The Region
      * @return The full Url
      */
-    protected static String constructUrl(String endPoint, AppType app, Region region) {
+    private static String constructUrl(String endPoint, AppType app, Region region) {
         return (API_BASE_PATH + app + "/").replaceAll("#", region.toString()) + endPoint;
     }
 
