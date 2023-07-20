@@ -201,7 +201,8 @@ public class RiotAPI {
         RIOT("riot"),
         LOL("lol"),
         TFT("tft"),
-        LOR("lor");
+        LOR("lor"),
+        VAL("val");
 
         private final String name;
 

@@ -1,6 +1,5 @@
 package net.petersil98.core.model;
 
-import net.petersil98.core.constant.Platform;
 import net.petersil98.core.constant.Region;
 import net.petersil98.core.http.RiotAPI;
 
@@ -10,6 +9,7 @@ import java.util.Objects;
  * Data Class that represents a Player's Account
  */
 public class Account {
+
     private String gameName;
     private String tagLine;
     private String puuid;
