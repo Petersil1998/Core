@@ -1,13 +1,13 @@
 package net.petersil98.core.constant;
 
 /**
- * Enumeration of the possible Regions in the Account Endpoint
+ * Enumeration of the possible Region in the Riot API
  */
 public enum Region {
-    AMERICA("americas"),
+    AMERICA("america"),
     EUROPE("europe"),
     ASIA("asia"),
-    E_SPORTS("esports");
+    SEA("sea");
 
     private final String name;
 
@@ -18,5 +18,28 @@ public enum Region {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    /**
+     * This Method returns the corresponding Region for a given Platform
+     * @param platform The Platform
+     * @return The corresponding Region
+     */
+    public static Region byPlatform(Platform platform) {
+        switch (platform) {
+            case EUW, EUNE, RU, TR -> {
+                return EUROPE;
+            }
+            case BR, NA, LAS, LAN -> {
+                return AMERICA;
+            }
+            case JP, KR -> {
+                return ASIA;
+            }
+            case OCE -> {
+                return SEA;
+            }
+        }
+        return null;
     }
 }

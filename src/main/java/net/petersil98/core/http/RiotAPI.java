@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.petersil98.core.Core;
+import net.petersil98.core.constant.Platform;
 import net.petersil98.core.constant.Region;
 import net.petersil98.core.http.exceptions.*;
 import net.petersil98.core.http.ratelimit.BlockingRateLimiter;
@@ -31,7 +32,7 @@ public class RiotAPI {
     private static final Marker MARKER = MarkerManager.getMarker(RiotAPI.class.getSimpleName());
     private static final Cache<String, HttpResponse<String>> CACHE = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(10)).build();
 
-    protected static final String API_BASE_PATH = "https://#.api.riotgames.com/";
+    private static final String API_BASE_PATH = "https://#.api.riotgames.com/";
 
     private static final String ACCOUNT_V1 = "account/v1/";
 
@@ -177,8 +178,20 @@ public class RiotAPI {
      * @param region The Region
      * @return The full Url
      */
-    private static String constructUrl(String endPoint, AppType app, Region region) {
+    protected static String constructUrl(String endPoint, AppType app, Region region) {
         return (API_BASE_PATH + app + "/").replaceAll("#", region.toString()) + endPoint;
+    }
+
+    /**
+     * Utility Method to construct the full Url for a given Endpoint, {@link AppType} and {@link Platform}
+     * @see #API_BASE_PATH
+     * @param endPoint The Endpoint
+     * @param app The AppType
+     * @param platform The Platform
+     * @return The full Url
+     */
+    protected static String constructUrl(String endPoint, AppType app, Platform platform) {
+        return (API_BASE_PATH + app + "/").replaceAll("#", platform.toString()) + endPoint;
     }
 
     /**
