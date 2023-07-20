@@ -10,8 +10,6 @@ import java.util.List;
  */
 public class Platform {
 
-    public static final Platform f = new Platform("kekw");
-
     private final String name;
 
     protected Platform(String name) {
