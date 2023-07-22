@@ -12,6 +12,7 @@ import net.petersil98.core.http.exceptions.*;
 import net.petersil98.core.http.ratelimit.BlockingRateLimiter;
 import net.petersil98.core.http.ratelimit.IPermit;
 import net.petersil98.core.http.ratelimit.RateLimiter;
+import net.petersil98.core.util.Util;
 import net.petersil98.core.util.settings.Settings;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.Marker;
@@ -38,10 +39,13 @@ public class RiotAPI {
 
     protected static RateLimiter rateLimiter = new BlockingRateLimiter();
 
-    private static HttpResponse<String> request(String url, Map<String, String> params) {
-        HashMap<String, String> mutableMap = new HashMap<>(params);
-        mutableMap.put("api_key", Settings.getAPIKey());
-        return HTTPClient.getInstance().get(url, mutableMap);
+    /**
+     * Utility Method that delegates the request to the {@link HTTPClient}
+     * @param url The full Url
+     * @return The response
+     */
+    private static HttpResponse<String> request(String url) {
+        return HTTPClient.getInstance().get(url);
     }
 
     /**
@@ -112,22 +116,23 @@ public class RiotAPI {
 
     /**
      * Utility Method that reads the cached response if caching is enable and that deals with the Rate Limiter (blocking) while making the API request
-     * @param fullUrl The full url for the request
+     * @param url The full url for the request
      * @param endpointMethod The Endpoint used in the url. Used for the Rate Limiter
      * @param region The Region to which the Request is being made. Used for the Rate Limiter
      * @param requiredClass The Class which the response is cast to
      * @param filter The Filter that gets included as GET parameter in the request
      * @return An object of Type <b>{@code requiredClass}</b> if casting is successful, {@code null} otherwise
      */
-    protected static <T> T handleCacheAndRateLimiter(String fullUrl, String endpointMethod, Region region, JavaType requiredClass, Map<String, String> filter) {
+    protected static <T> T handleCacheAndRateLimiter(String url, String endpointMethod, Region region, JavaType requiredClass, Map<String, String> filter) {
+        String urlWithGetParams = url + "?" + Util.buildParameters(filter);
         if(Settings.useCache()) {
-            HttpResponse<String> cachedResponse = CACHE.getIfPresent(fullUrl);
+            HttpResponse<String> cachedResponse = CACHE.getIfPresent(urlWithGetParams);
             if (cachedResponse != null) return handleAndCastResponse(cachedResponse, requiredClass);
         } else CACHE.invalidateAll();
         try(IPermit ignored = rateLimiter.acquire(region, endpointMethod)) {
-            HttpResponse<String> response = request(fullUrl, filter);
+            HttpResponse<String> response = request(url);
             if(response.statusCode() == HttpStatus.SC_OK) {
-                if(Settings.useCache()) CACHE.put(fullUrl, response);
+                if(Settings.useCache()) CACHE.put(urlWithGetParams, response);
                 rateLimiter.updateRateLimitsFromHeaders(region, endpointMethod, response.headers());
             } else if(response.statusCode() == 429) {
                 Core.LOGGER.warn("Rate Limit has been exceeded for endpoint " + endpointMethod + "!");
