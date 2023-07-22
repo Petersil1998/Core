@@ -216,7 +216,7 @@ public class BlockingRateLimiter extends RateLimiter {
      */
     private void parkCurrentThread(DoubleKeyMap<Region, String, List<Thread>> map, Region region, String method) {
         Thread currentThread = Thread.currentThread();
-        if(!map.containsKey(region, method)) map.put(region, method, List.of());
+        if(!map.containsKey(region, method)) map.put(region, method, new CopyOnWriteArrayList<>());
         map.get(region, method).add(currentThread);
         try {
             synchronized (currentThread) {
