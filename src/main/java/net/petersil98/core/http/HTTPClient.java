@@ -1,10 +1,7 @@
 package net.petersil98.core.http;
 
 import net.petersil98.core.Core;
-import net.petersil98.core.util.Util;
 import net.petersil98.core.util.settings.Settings;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -13,10 +10,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents an HTTP Client and is used by {@link RiotAPI}. It uses the {@link HttpClient} internally to make the Requests.

@@ -130,7 +130,7 @@ public class RiotAPI {
             if (cachedResponse != null) return handleAndCastResponse(cachedResponse, requiredClass);
         } else CACHE.invalidateAll();
         try(IPermit ignored = rateLimiter.acquire(region, endpointMethod)) {
-            HttpResponse<String> response = request(url);
+            HttpResponse<String> response = request(urlWithGetParams);
             if(response.statusCode() == HttpStatus.SC_OK) {
                 if(Settings.useCache()) CACHE.put(urlWithGetParams, response);
                 rateLimiter.updateRateLimitsFromHeaders(region, endpointMethod, response.headers());
