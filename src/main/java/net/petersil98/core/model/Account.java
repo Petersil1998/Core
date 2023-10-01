@@ -3,6 +3,8 @@ package net.petersil98.core.model;
 import net.petersil98.core.constant.Region;
 import net.petersil98.core.http.RiotAPI;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -33,6 +35,8 @@ public class Account {
      * @return An Account if the Request was successful, <code>null</code> otherwise
      */
     public static Account getAccountByRiotId(String name, String tag, Region region) {
+        name = URLEncoder.encode(name, StandardCharsets.UTF_8);
+        tag = URLEncoder.encode(tag, StandardCharsets.UTF_8);
         return RiotAPI.requestRiotAccountEndpoint("accounts/by-riot-id/", name + "/" + tag, region, Account.class);
     }
 
